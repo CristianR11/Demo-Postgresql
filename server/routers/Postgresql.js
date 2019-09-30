@@ -28,7 +28,7 @@ module.exports = function(app){
 	app.use(bodyParser.json());
 
 
-	// connect to the MongoDB
+	// connect to the Postgresql
 	const sequelize = new Sequelize('postgres', 'postgres', 'Passw0rd', {
 		host: 'localhost',
 		dialect: 'postgres',
@@ -40,6 +40,7 @@ module.exports = function(app){
 		  }
 	});
 
+	//Validation 
 	sequelize
 	.authenticate()
 	.then(() => {
@@ -49,7 +50,7 @@ module.exports = function(app){
 		console.error('Unable to connect to the database:', err);
 	});
 
-	//Modelo de datos
+	//Model of data
 	var model = sequelize.define('movie', {
 		id: {
 		  type: Sequelize.INTEGER,
