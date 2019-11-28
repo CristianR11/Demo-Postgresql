@@ -2,11 +2,9 @@
 applications:
 - instances: 1
   timeout: 180
-  name: MEANStackMongoDbExpressjsAngularNodejsLNLK
+  name: AppNodejsPostgresql
   buildpack: sdk-for-nodejs
-  command: npm prune --production && NODE_ENV=production npm start
-  memory: 256MB
-  domain: mybluemix.net
-  host: mean-stack-mongodb-expressjs-angular-nodejs-lnlkf
-  env:
-    NPM_CONFIG_PRODUCTION : false
+  command: npm start
+  memory: 256M
+  domain: not-used.net
+  host: not-used
