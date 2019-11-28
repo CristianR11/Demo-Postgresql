@@ -1,244 +1,177 @@
-[![](https://img.shields.io/badge/IBM%20Cloud-powered-blue.svg)](https://bluemix.net)
+# IBM-Kubernetes-Service-PostgreSQL-LAB
+Ejercicio con Aplicación en Angular en NodeJS base de datos PostgreSQL
 
-# Create and deploy a cloud native web application using the MEAN (MongoDB, Express, AngularJS, Node.js) stack
+# Estructura de la aplicación
 
-This repository has code to create a web app that is pre-configured with the MEAN stack (MongoDB, Express.js, AngularJS, Node.js). We use IBM Cloud services to host our application; the IBM Cloud Developer Tools CLI to run and debug locally; and lastly provide native commands to deploy to Kubernetes or Cloud Foundry.
+Se tiene una aplicación construida para realizar el CRUD del registro de peliculas, como lo son su identificador ID, el titulo, una descripcion, su director y el año en la cual fue el estreno de la misma; En la parte del cliente esta construida con Angular_Js y por la parte del servidor Node_Js, con un almacenamiento en la base de datos relacional Postgresql.
 
-By running this code, you'll understand how to:
-* Build an application that uses MongoDB, Express.js, AngularJS, and Node.js.
-* Create an application for monitoring and distributed tracing using App Metrics.
-* Deploy an application using the IBM Cloud Developer Tools CLI or natively with Kubernetes or Cloud Foundry.
+![Arquitectura Postgresql](https://user-images.githubusercontent.com/40369712/69654066-30277680-1042-11ea-99d7-7cb1d1b98ca1.jpg)
 
-![](https://github.com/IBM/pattern-utils/raw/master/mern-starter/mean-architecture.png)
 
-## Flow
+A continuación se presenta un Hands on para realizar el despliegue de esta aplicación Node.js en kubernetes.
 
-1. The user views the AngularJS web app with a browser.
-2. With both components written in Node.js, the AngularJS front end communicates with the Express back end via RESTful APIs.
-3. The back-end Express application uses the Mongo database for storing and retrieving data.
-4. Back-end results are communicated back to the the front end.
-5. Front-end results are rendered in a human readable format to the user.
+## Índice
 
-## Included Components
+* Prerrequisitos.
+* Correr imagen localmente.
+* Despliegue imagen en el clúster de kubernetes creado previamente.
+* Verificación del despliegue de la imagen.
+* Referencias.
 
-* [IBM Cloud](https://cloud.ibm.com/docs/overview?topic=overview-whatis-platform): Provides a computing platform that includes a catalog of cloud services which can be integrated with PaaS and IaaS to build business applications.
-* [Kubernetes Cluster](https://cloud.ibm.com/docs/containers?topic=containers-getting-started): Create and manage your own cloud infrastructure and use Kubernetes as your container orchestration engine.
-* [MongoDB](https://cloud.ibm.com/docs/infrastructure/database-tools?topic=database-tools-dbt-mongodb): Fully featured NoSQL server that is horizontally scalable to meet your enterprise class database service needs.
-* [Express](https://expressjs.com/): Most popular and minimalistic web framework for creating API and Web server.
-* [AngularJS](https://angular.io/): JavaScript library for building user interfaces.
+## Prerrequisitos
 
-## Featured Technologies
+* Tener creada una aplicación de node.js.
+* Tener un clúster aprovisionado y configurado correctamente.
+* Debe tener el Dockerfile de la aplicación, para realizar la habilitación de la aplicación de node.js para el correcto despliegue en la nube y su respectiva creación del Dockerfile se puede dirigir al siguiente enlace: https://cloud.ibm.com/docs/node?topic=nodejs-enable_existing&locale=es 
 
-* [Node.js](https://nodejs.org/): An open-source JavaScript run-time environment for executing server-side JavaScript code.
-* [Containers](https://www.ibm.com/cloud/container-service): Virtual software objects that include all the elements that an app needs to run.
-* [Cloud native](https://github.com/cncf): Cloud native is an approach to building and running applications that exploits the advantages of the cloud computing delivery model.
+## Correr imagen localmente
 
-## Getting Started
+Para poder correr la imagen localmente, primero debe descargar o clonar el Git, luego debe abrir en la terminal la carpeta del proyecto que descargo del Git y descomprimió.
 
-> As an alternative to the steps below, you can [create this project as a starter kit on IBM Cloud](https://cloud.ibm.com/developer/appservice/create-app?starterKit=d3ac3372-54c6-3f96-bf5f-5e397c11ab7b), which automatically provisions required services, and injects service credentials into a custom fork of this pattern.
+Luego debe abrir la terminal en la carpeta y copiar la ruta de la misma, e iniciar sesión en consola como super usuario, a continuación, vera el código de cómo acceder como super usuario a la carpeta.
 
-Install the latest version of the [IBM Cloud Developer Tools](https://github.com/IBM-Cloud/ibm-cloud-developer-tools) CLI.
-
-* For macOS and Linux, run the  following command:
-  ```
-  curl -sL https://ibm.biz/idt-installer | bash
-  ```
-
-* For Windows 10 Pro, run the following command in a PowerShell prompt as Admistrator:
-  ```
-  [Net.ServicePointManager]::SecurityProtocol = "Tls12"; iex(New-Object Net.WebClient).DownloadString('https://ibm.biz/idt-win-installer')
-  ```
-
-> *NOTE:* IDT builds and runs the project using Docker containers, the recommended approach for cloud native development. However, direct use of native tools (e.g. npm) is also supported. See the [Appendix](APPENDIX.md) for more information.
-
-## Building your MEAN app
-
-The starter project supports the concept of dev mode and release mode.  In dev mode, the starter app runs with dev dependencies installed and hot reload enabled for both the front-end and back-end aspects of the app. Dev mode is intended for use during app development. Release mode excludes dev dependencies and runs the app without hot reload. Release mode is intended for running in production.
-
-#### Working in development mode
-
-1. Build the project with all dependencies, including `dev` dependencies, with the command:
-   ```
-   ibmcloud dev build --debug
-   ```    
-
-   > *NOTE:* Ensure a Docker daemon is running before issuing this command.
-
-2. Run project unit tests with the command:
-   ```
-   ibmcloud dev test
-   ```
-
-3. Run the app in dev mode with command:
-   ```
-   ibmcloud dev shell run-dev &
-   ```
-
-   A web server will runs on port `3000` and the app itself runs on port 3100. The web server and app will automatically reload if changes are made to the source.
-
-4. Run the app in interactive debug mode with command:
-   ```
-   ibmcloud dev debug
-   ```
-
-   The app listens on port `5858` for the debug client to attach to it, and on port `3000` for app requests.
-
-#### Working in release mode
-
-1. Build the project:
-   ```
-   ibmcloud dev build
-   ```
-
-   This builds the project using `Dockerfile-tools`. Effectively equivalent to `idt build --debug`.
-
-2. Run the project:
-   ```
-   ibmcloud dev run
-   ```
-
-   This runs the project using the release image built on the fly using `Dockerfile`. Hot reload is not available in the release image.
-
-## Default URLs and sample output
-
-Whether you run in dev mode or release mode, you have the same default URLs available to you:
-
-1. [http://localhost:3000](http://localhost:3000)
-
-   ![](https://github.com/IBM/pattern-utils/raw/master/mern-starter/homepage.png)
-
-2. [http://localhost:3000/appmetrics-dash](http://localhost:3000/appmetrics-dash)
-
-   ![](https://github.com/IBM/pattern-utils/raw/master/mern-starter/appmetrics.png)
-
-3. [http://localhost:3000/health](http://localhost:3000/health)
-
-   ![](https://github.com/IBM/pattern-utils/raw/master/mern-starter/health.png)
-
-## Deploying your MEAN app
-
-These projects are designed for deployment to IBM Cloud through the IBM Cloud Developer Tools CLI, to Kubernetes (public or private cloud) or Cloud Foundry (public cloud only).
-
-Before deploying your MEAN app, you will need to sign in to [IBM Cloud](https://cloud.ibm.com/docs/cli?topic=cloud-cli-getting-started#step3-configure-idt-env) through the command line.
-```
-ibmcloud login
-```
-
-> *NOTE*: As mentioned earlier, for deployments on other environments using native commands see [Appendix](APPENDIX.md).
-
-#### As a Cloud Foundry app
-
-To deploy the app to Cloud Foundry:
-```
-ibmcloud dev deploy
-```
-
-#### In a Kubernetes cluster
-
-To deploy the app to Kubernetes:
-```
-ibmcloud dev deploy --target container
-```
-
-An interactive session will begin where you'll be prompted for a new or existing IBM Cloud Kubernetes Service cluster name. Once the cluster is validated and the Docker registry confirmed the app will be deployed to a Kubernetes cluster. _The following output has been trimmed for readability._
+<img width="927" alt="Recorte1" src="https://user-images.githubusercontent.com/40369712/68488077-4ba51b80-0212-11ea-8703-0189f18b7195.png">
 
 ```
-The IBM cluster name for the deployment of this application will be: stevemar-cluster
-Log in to the IBM Container Registry ...
-Configuring with cluster 'stevemar-cluster' ...
+sudo –i
+cd ..
+cd  home/user/<Ruta del proyecto>
+```
+<img width="500" alt="2" src="https://user-images.githubusercontent.com/50923637/68408076-b5f68700-0152-11ea-9283-a4583fd0b55d.png">
 
-Deployments:
-NAME                     DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
-meanexample-deployment   1         1         1            0           3s
-mongo-deployment         1         1         1            0           3s
+`Nota: En el recuadro amarillo está el usuario correspondiente a su máquina.`
 
-Nodes:
-NAME             STATUS    ROLES     AGE       VERSION
-10.177.184.198   Ready     <none>    14m       v1.10.5+IKS
+Luego usted debe crear la imagen Docker con el Docker local, para realizar esta acción debe ejecutar el siguiente comando tal cual como esta sin omitir puntos ni nada, lo único que debe modificar es el espacio donde esta el nombre de la imagen por el nombre que usted desee asignar, para esto si debe quitar los símbolos de mayor y menor.
 
-Your application is hosted at http://169.47.252.58:32281/
+```
+docker build -t <Nombre de la imagen> .
+Ejemplo: docker build -t appnode .
 ```
 
-## Setting up MongoDB
+Después de ejecutar el comando le aparecerán varios datos de la compilación del comando, pero debe estar pendiente de que al final de todo pueda ver lo siguiente que es la confirmación de la creación de la imagen, donde vera primero el ID y luego la etiqueta de la imagen.
 
-Now that we have a Dockerized version of our app running, before we push it to production we'll need to configure a managed Mongo database, this is a MEAN stack after all!
+<img width="500" height="50" alt="3" src="https://user-images.githubusercontent.com/50923637/68408681-cbb87c00-0153-11ea-8ec3-47666ce80af8.png">
 
-### Provisioning an instance of MongoDB
+Luego usted debe verificar que se ha creado la imagen Docker eso lo realiza con el siguiente comando.
 
-* Create a managed instance of MongoDB by searching for **Compose for MongoDB** in the [Catalog](https://cloud.ibm.com/catalog/)
-* Once created go to the _Service credentials_ menu and create a new credential.
-* Copy the `uri` to a text file, we'll need to parse the content out.
-* From the `uri` we will need to extract the `username`, `password`, and `mongo_url`. The text is in the form of `mongodb://{username}:{password}@{mongo_url}`.
-
-![](https://github.com/IBM/pattern-utils/raw/master/compose-dbs/mongo-creds.png)
-
-> *NOTE*: Alternatively, you may install MongoDB natively. Refer to the [install instructions](https://docs.mongodb.com/manual/administration/install-community).
-
-### Configuring MongoDB
-
-Connecting to MongoDB is done in the file [server/routers/mongo.js](server/routers/mongo.js). It is controlled through environment variables. See the following sample set of credentials.
-
-```bash
-export MONGO_URL='portal-ssl1308-22.bmix-dal-yp-c4627161-a212-45bd-b0bd-62004a6e6f5c.421838044.composedb.com:54951'
-export MONGO_USER='admin'
-export MONGO_PASS='AFLLYADUNVAUKPNO'
-export MONGO_DB_NAME='admin'
+```
+docker 	images
 ```
 
-If you want to perform a quick test, try using the [`mongo`](https://docs.mongodb.com/manual/reference/program/mongo/) CLI.
-```bash
-$ mongo --ssl --sslAllowInvalidCertificates $MONGO_URL -u $MONGO_USER -p $MONGO_PASS --authenticationDatabase $MONGO_DB_NAME
-MongoDB shell version v4.0.1
-connecting to: mongodb://portal-ssl1308-22.bmix-dal-yp-c4627161-a212-45bd-b0bd-62004a6e6f5c.421838044.composedb.com:54951/test
-MongoDB server version: 3.4.10
-mongos>
+Luego debe correr la imagen docker que se previamente creo, para esto debe ejecutar el siguiente comando, donde debe modificar el puerto de salida, el puerto de entrada y el nombre de la imagen. 
+
+`Nota: El puerto está en el 3000 por defecto, pero si usted desea que se realice a otro puerto debe realizar el mapeo sobre el puerto al que quiere exponer la aplicación, en este caso se mapeo para exponer la aplicación en el puerto 8000.`
+
+```
+docker 	run -p <Port de salida>:<Port de entrada> -d <nombre de la imagen>
+Ejemplo: docker 	run -p 8000:3000 -d appnode
 ```
 
-#### Using Mongo with Cloud Foundry
+<img width="700" alt="4" src="https://user-images.githubusercontent.com/50923637/68409894-e5f35980-0155-11ea-870e-f6b3e7edc736.png">
 
-Navigate to your application, select the _Runtimes_ menu and you'll be given an opportunity to enter environment variables.
+Luego puede verificar el despliegue en el localhost:8000, el localhost depende del que usted asigno para su aplicación, en este caso es el 8000, para verificar en su navegador ingrese localhost:8000 y podrá ver su aplicación como se ve a continuación.
 
-#### Using Mongo with Kubernetes
+<img width="928" alt="Recorte2" src="https://user-images.githubusercontent.com/40369712/68488783-cc184c00-0213-11ea-9031-32f72eb25498.png">
 
-Open `values.yaml` under the chart directory (e.g. `mean-app/chart/meanexample/`) and update the following section with the appropriate values.
+## Creacion y despliegue de una imagen en el clúster de kubernetes creado previamente
 
-```yaml
-services:
-  mongo:
-     url: {uri}
-     dbName: {dbname}
-     username: {username}
-     password: {password}
-     env: production
+Para realizar el despliegue de la aplicación correctamente, primero debe configurar el espacio de trabajo como se ve a continuación (region, grupo de recurso y cluster).
+
+
+Inicio de sesion en la consola de IBM Cloud en la region y el grupo de recursos del cluster
+
+```
+ibmcloud login -a cloud.ibm.com -r <region> -g <grupo de recursos>
+Ejemplo: ibmcloud login -a cloud.ibm.com -r us-east -g app-demo
 ```
 
-Open `bindings.yaml` under the chart directory to add Mongo references. Add the following entries at the end of the file if they are not present already.
+Descarga de los archivos de configuracion para el cluster
 
-```yaml
-  - name: MONGO_URL
-    value: {{ .Values.services.mongo.url }}
-  - name: MONGO_DB_NAME
-    value: {{ .Values.services.mongo.name }}
-  - name: MONGO_USER
-    value: {{ .Values.services.mongo.username }}
-  - name: MONGO_PASS
-    value: {{ .Values.services.mongo.password }}
-  - name: MONGO_CA
-    value: {{ .Values.services.mongo.ca }}
+```
+ibmcloud ks cluster config --cluster <ID_Cluster>
+Ejemplo: ibmcloud ks cluster config --cluster bl1gdkaw09sj8dmer1cg
 ```
 
-## Links
 
-* [Node Programming Guide](https://cloud.ibm.com/docs/node?topic=nodejs-getting-started): Tutorial on Node.js app development.
-* [Adding a service to your app](https://cloud.ibm.com/docs/apps?topic=creating-apps-add-resource): Learn how to add a service to your cloud native app.
+Luego de realizar el paso anterior usted debe crear el namespace donde alojara su aplicación, para hacer eso usted debe ejecutar el siguiente comando en su terminal.
 
-## Learn More
+```
+ibmcloud cr namespace-add <my_namespace>
 
-* [Starter Kits](https://cloud.ibm.com/developer/appservice/starter-kits/): Enjoyed this application? Check out our Starter Kits.
-* [Architecture Center](https://www.ibm.com/cloud/garage/architectures): Explore Architectures that provide flexible infrastructure solutions.
+Ejemplo: ibmcloud cr namespace-add pruebanamespace
+```
+<img width="500" height="150" alt="7" src="https://user-images.githubusercontent.com/50923637/68423795-bbfb6080-0170-11ea-84d4-e631ddbbebc7.png">
 
-## License
-This code pattern is licensed under the Apache Software License, Version 2.  Separate third party code objects invoked within this code pattern are licensed by their respective providers pursuant to their own separate licenses. Contributions are subject to the [Developer Certificate of Origin, Version 1.1 (DCO)](https://developercertificate.org/) and the [Apache Software License, Version 2](https://www.apache.org/licenses/LICENSE-2.0.txt).
+Luego debe crear la imagen docker en el container register de IBM Cloud, para realizar esta acción debe ejecutar los siguientes comandos y podrá ver lo que aparece en la siguiente imagen, donde aparecen todos los namespaces que tenga creados.
 
-[Apache Software License (ASL) FAQ](https://www.apache.org/foundation/license-faq.html#WhatDoesItMEAN)
+```
+ibmcloud cr build --tag us.icr.io/<namespace>/<nombre de la imagen> .
+Ejemplo: ibmcloud cr build --tag us.icr.io/pruebanamespace/appnodemongos .
+ibmcloud cr namespace-list
+```
 
+<img width="500" alt="8" src="https://user-images.githubusercontent.com/50923637/68424929-067ddc80-0173-11ea-9705-d2ed048abd72.png">
+
+Despues de eso debe crear el servicio del despliegue en kubernetes para realizar eso ejecutara los siguientes comandos y para verificar que se realizo correctamente vera la siguiente imagen.
+
+```
+kubectl create deployment <nombreimagen> --image=us.icr.io/<manespace>/<nombreimagen> 
+Ejemplo: kubectl create deployment appnodemongos --image=us.icr.io/pruebanamespace/appnodemongos
+```
+
+<img width="900" height="30" alt="9" src="https://user-images.githubusercontent.com/50923637/68425142-768c6280-0173-11ea-8b9c-c55af3cca981.png">
+
+Luego usted debe exponer la imagen docker en el puerto que configuro.
+
+```
+kubectl expose deployment/<nombreimagen> --type=NodePort --port=<Port entrada>
+Ejemplo: kubectl expose deployment/appnodemongos --type=NodePort --port=3000
+```
+
+<img width="900" height="30" alt="10" src="https://user-images.githubusercontent.com/50923637/68425518-409bae00-0174-11ea-9ff3-2453eb3cc566.png">
+
+
+## Verificación del despliegue de la imagen.
+
+Para verificar el despliegue de la imagen usted primero debe verificar el nombre de su cluster, eso lo puede hacer con el siguiente comando.
+
+```
+ibmcloud cs clusters
+```
+
+<img width="700" alt="11" src="https://user-images.githubusercontent.com/50923637/68425917-07177280-0175-11ea-8739-bb5635dbd58a.png">
+
+Despues debe tomar nota de la ip publica del cluster ejecutando el siguiente comando.
+
+```
+ibmcloud cs workers <nombre del cluster>
+Ejemplo: ibmcloud cs workers iks-demo
+```
+
+<img width="700" alt="12" src="https://user-images.githubusercontent.com/50923637/68426065-5493df80-0175-11ea-86ba-9b9b3e96063c.png">
+
+Luego debe verificar el nombre del servicio que se ha creado, esta acción la puede realizar ejecutando el siguiente comando. 
+
+```
+kubectl get services
+```
+
+<img width="500" height="100" alt="13" src="https://user-images.githubusercontent.com/50923637/68426247-b3f1ef80-0175-11ea-84c4-3118a0cc3daf.png">
+
+Verifique en su navegador la aplicación en la dirección como vera a continuación: 
+
+```
+<IP publica>:<NodePort>
+169.47.168.98:30925
+```
+
+<img width="500" alt="13" src="https://user-images.githubusercontent.com/50923637/68426378-016e5c80-0176-11ea-9700-2dcfc4c10be1.png">
+
+## Referencias
+
+* Habilitar aplicaciones Node.js existentes para despliegue en la nube
+      https://cloud.ibm.com/docs/node?topic=nodejs-enable_existing&locale=es
+* Contenerizar una aplicacion web Node.js
+      https://nodejs.org/de/docs/guides/nodejs-docker-webapp/
+* Instalacion de docker en SO Ubuntu
+      https://docs.docker.com/install/linux/docker-ce/ubuntu/

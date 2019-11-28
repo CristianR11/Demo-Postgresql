@@ -15,7 +15,7 @@ var expect = require('chai').expect;
 var http = require('http');
 
 // Below code demonstrates using various methods of testing
-describe('Testing Server', function() { 
+describe('Testing Server', function() {
   let test_server;
   this.timeout(0);
 

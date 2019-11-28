@@ -10,7 +10,7 @@ var bodyParser = require('body-parser');
 
 // inicio
 // Importar Modulo Movies
-var Movie = require('./routers/Postgresql');
+var Movie = require('./routers/Postgres');
 
 
 const logger = log4js.getLogger(appName);
